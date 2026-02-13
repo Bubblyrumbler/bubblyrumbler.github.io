@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Leaderboard</title>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        table { width: 100%; border-collapse: collapse; font-size: 18px; }
+        th { background: #222; color: #fff; padding: 10px; text-align: left; }
+        td { padding: 10px; border-bottom: 1px solid #ccc; }
+    </style>
+</head>
+<body>
+
+<h2 style="text-align:center;">Leaderboard</h2>
+<div id="leaderboard"></div>
+
+<script>
+var API_URL = "https://buibbly.bubblyrumbler.workers.dev/";
+var PAYOUTS = [750, 400, 300, 200, 150, 80, 50, 40, 20, 10];
+
+function loadLeaderboard() {
+    fetch(API_URL)
+        .then(function(response) { return response.json(); })
+        .then(function(data) {
+
+            data.sort(function(a, b) {
+                return Number(b.bets) - Number(a.bets);
+            });
+
+            var top10 = data.slice(0, 10);
+
+            var html = "<table>";
+            html += "<tr><th>Place</th><th>Username</th><th>Bets</th><th>Payout</th></tr>";
+
+            for (var i = 0; i < top10.length; i++) {
+                var p = top10[i];
+                html += "<tr>";
+                html += "<td>" + (i + 1) + "</td>";
+                html += "<td>" + p.username + "</td>";
+                html += "<td>$" + Number(p.bets).toFixed(2) + "</td>";
+                html += "<td>$" + PAYOUTS[i] + "</td>";
+                html += "</tr>";
+            }
+
+            html += "</table>";
+
+            document.getElementById("leaderboard").innerHTML = html;
+        });
+}
+
+loadLeaderboard();
+setInterval(loadLeaderboard, 60000);
+</script>
+
+</body>
+</html>
